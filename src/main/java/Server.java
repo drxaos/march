@@ -1,18 +1,11 @@
-
-import org.rapidoid.config.Conf;
 import org.rapidoid.http.MediaType;
 import org.rapidoid.http.Req;
 import org.rapidoid.http.Resp;
-import org.rapidoid.setup.App;
-import org.rapidoid.setup.My;
 import org.rapidoid.setup.On;
-import org.rapidoid.setup.Setup;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
 
@@ -21,7 +14,11 @@ public class Server {
 
         On.get("/").serve((Req req, Resp resp) -> {
             resp.contentType(MediaType.HTML_UTF_8);
-            return new String(convertStreamToByteArray(Server.class.getClassLoader().getResourceAsStream("main.html"), 1024));
+            if (req.clientIpAddress().equals("127.0.0.1")) {
+                return new String(convertStreamToByteArray(Server.class.getClassLoader().getResourceAsStream("main.html"), 1024));
+            } else {
+                return new String(convertStreamToByteArray(Server.class.getClassLoader().getResourceAsStream("no.html"), 1024));
+            }
         });
 
         while (true) {

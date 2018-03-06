@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Центр управления погодой</title>
+    <link rel="stylesheet" href="/jquery-ui.min.css">
+    <script src="/jquery-3.3.1.min.js"></script>
+    <script src="/jquery-ui.min.js"></script>
+    <script>
+        $( function() {
+            var progressTimer,
+                progressbar = $( "#progressbar" ),
+                progressLabel = $( ".progress-label" ),
+                dialogButtons = [{
+                    text: "Отменить запуск",
+                    click: closeDownload
+                }],
+                dialog = $( "#dialog" ).dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    resizable: false,
+                    buttons: dialogButtons,
+                    open: function() {
+                        progressTimer = setTimeout( progress, 2000 );
+                    },
+                    beforeClose: function() {
+                        downloadButton.button( "option", {
+                            disabled: false,
+                            label: "Запустить весну!"
+                        });
+                    }
+                }),
+                downloadButton = $( "#downloadButton" )
+                    .button()
+                    .on( "click", function() {
+                        $( this ).button( "option", {
+                            disabled: true,
+                            label: "Запуск..."
+                        });
+                        dialog.dialog( "open" );
+                    });
+
+            progressbar.progressbar({
+                value: false,
+                change: function() {
+                    var pv = progressbar.progressbar( "value" );
+                    if(pv >= 0 && pv < 25) {
+                        progressLabel.text("Установка подснежников...");
+                    }
+                    if(pv >= 25 && pv < 50) {
+                        progressLabel.text("Сборка снега...");
+                    }
+                    if(pv >= 50 && pv < 75) {
+                        progressLabel.text("Запуск зеленой травы...");
+                    }
+                    if(pv >= 75 && pv < 100) {
+                        progressLabel.text("Пересылка грачей...");
+                    }
+                },
+                complete: function() {
+                    progressLabel.text( "Готово!" );
+                    dialog.dialog( "option", "buttons", [{
+                        text: "Закрыть",
+                        click: closeDownload
+                    }]);
+                    $(".ui-dialog button").last().trigger( "focus" );
+
+                    $("body").html("<img src='/img.jpg'/>");
+                }
+            });
+
+            function progress() {
+                var val = progressbar.progressbar( "value" ) || 0;
+
+                progressbar.progressbar( "value", val + Math.floor( Math.random() * 3 ) );
+
+                if ( val <= 99 ) {
+                    progressTimer = setTimeout( progress, 150 );
+                }
+            }
+
+            function closeDownload() {
+                clearTimeout( progressTimer );
+                dialog
+                    .dialog( "option", "buttons", dialogButtons )
+                    .dialog( "close" );
+                progressbar.progressbar( "value", false );
+                progressLabel
+                    .text( "Запускаем весну..." );
+                downloadButton.trigger( "focus" );
+            }
+        } );
+    </script>
+    <style>
+        #progressbar {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #fff;
+        }
+
+        .ui-dialog-titlebar-close {
+            display: none;
+        }
+
+        #downloadButton, img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="dialog" title="Запуск весны">
+    <div class="progress-label">Запускаем весну...</div>
+    <div id="progressbar"></div>
+</div>
+
+<button id="downloadButton">Запустить весну!</button>
+
+
+</body>
+</html>
